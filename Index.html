@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>VIVID - Social App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #f0f0ff;
+        }
+        #app {
+            max-width: 430px;
+            margin: 0 auto;
+            height: 100vh;
+            background: #0a0a0f;
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #13131f;
+            display: flex;
+            height: 72px;
+            border-top: 1px solid rgba(42,42,64,0.2);
+        }
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .tab-icon { font-size: 24px; }
+        .tab-label { font-size: 10px; font-weight: 600; color: #7b7b9a; }
+        .tab-active .tab-label { color: #ff2d6f; }
+        .screen {
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 80px;
+        }
+        .hide { display: none !important; }
+        .header {
+            padding: 16px 18px;
+            background: #0a0a0f;
+            border-bottom: 1px solid #2a2a40;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff2d6f, #00e5ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .story-row {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0 14px 16px;
+            overflow-x: auto;
+        }
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .story-ring {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff2d6f, #7c3aed, #00e5ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .story-inner {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+        .post-card {
+            background: #13131f;
+            border-bottom: 1px solid #2a2a40;
+        }
+        .post-header {
+            padding: 13px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        .post-content {
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 72px;
+        }
+        .post-stats {
+            display: flex;
+            gap: 20px;
+            padding: 12px 16px;
+        }
+        .stat-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #7b7b9a;
+            font-size: 14px;
+        }
+        .chat-row {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 18px;
+            border-bottom: 1px solid rgba(42,42,64,0.2);
+            cursor: pointer;
+        }
+        .chat-header {
+            padding: 12px 14px;
+            background: #13131f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #2a2a40;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .message {
+            max-width: 76%;
+            padding: 10px 13px;
+            border-radius: 18px;
+            font-size: 14px;
+        }
+        .message-out {
+            background: linear-gradient(135deg, #ff2d6f, #7c3aed);
+            align-self: flex-end;
+            border-radius: 18px 18px 4px 18px;
+        }
+        .message-in {
+            background: #1e1e35;
+            align-self: flex-start;
+            border-radius: 18px 18px 18px 4px;
+        }
+        .chat-input-bar {
+            padding: 8px 10px;
+            background: #13131f;
+            border-top: 1px solid #2a2a40;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .chat-input {
+            flex: 1;
+            background: #1a1a2e;
+            border-radius: 22px;
+            padding: 10px 14px;
+            border: none;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .send-btn {
+            background: linear-gradient(135deg, #ff2d6f, #7c3aed);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+        }
+        .filter-btn {
+            background: #1a1a2e;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 14px;
+            color: #7b7b9a;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .filter-active {
+            background: #ff2d6f;
+            color: white;
+        }
+        .unread-badge {
+            background: #ff2d6f;
+            border-radius: 10px;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            padding: 0 5px;
+        }
+        .profile-card {
+            text-align: center;
+            padding: 28px 20px;
+            background: linear-gradient(180deg, rgba(255,45,111,0.2) 0%, transparent 100%);
+        }
+        .avatar-lg {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div id="messages-screen" class="screen">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="logo">VIVID</div>
+                <button id="add-friend-btn" style="background: #ff2d6f22; border: 1px solid #ff2d6f44; border-radius: 20px; padding: 6px 12px; color: #ff2d6f; font-size: 12px; font-weight: bold; cursor: pointer;">➕ Add</button>
+            </div>
+            <div style="background: #1a1a2e; border-radius: 14px; padding: 9px 14px; margin-top: 12px;">
+                <span>🔍</span> <input type="text" id="search-input" placeholder="Search messages..." style="background: none; border: none; color: white; width: 90%; outline: none;">
+            </div>
+            <div style="display: flex; gap: 6px; margin-top: 12px;">
+                <button class="filter-btn filter-active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="unread">Unread</button>
+                <button class="filter-btn" data-filter="groups">Groups</button>
+            </div>
+        </div>
+        <div id="chat-list"></div>
+    </div>
+
+    <div id="home-screen" class="screen hide">
+        <div class="header">
+            <div style="display: flex; justify-content: space-between;">
+                <div class="logo">VIVID</div>
+                <div style="font-size: 13px; color: #7b7b9a;">🇿🇦 East Rand</div>
+            </div>
+        </div>
+        <div id="stories-row" class="story-row"></div>
+        <div id="feed-posts"></div>
+    </div>
+
+    <div id="reels-screen" class="screen hide"></div>
+    <div id="profile-screen" class="screen hide"></div>
+    <div id="create-screen" class="screen hide"></div>
+
+    <div id="chat-detail" class="hide" style="height: 100%; display: flex; flex-direction: column;">
+        <div class="chat-header">
+            <button class="back-btn" onclick="closeChat()">←</button>
+            <div id="chat-avatar" class="avatar" style="width: 42px; height: 42px;"></div>
+            <div>
+                <div id="chat-name" style="font-weight: bold;"></div>
+                <div id="chat-status" style="font-size: 12px; color: #7b7b9a;"></div>
+            </div>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-bar">
+            <input type="text" id="message-input" class="chat-input" placeholder="Message...">
+            <button class="send-btn" onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-btn" data-tab="messages"><div class="tab-icon">💬</div><div class="tab-label">Chats</div></button>
+        <button class="tab-btn" data-tab="home"><div class="tab-icon">🏠</div><div class="tab-label">Feed</div></button>
+        <button class="tab-btn" data-tab="create"><div class="tab-icon">📷</div><div class="tab-label">Create</div></button>
+        <button class="tab-btn" data-tab="reels"><div class="tab-icon">🎬</div><div class="tab-label">Reels</div></button>
+        <button class="tab-btn" data-tab="profile"><div class="tab-icon">👤</div><div class="tab-label">Me</div></button>
+    </div>
+</div>
+
+<script>
+    const USERS = [
+        { id: 1, name: "Zara Mokoena", handle: "@zaravibes", avatar: "ZM", color: "#ff2d6f", followers: "124K" },
+        { id: 2, name: "Lebo Dlamini", handle: "@lebo.moves", avatar: "LD", color: "#7c3aed", followers: "56.2K" },
+        { id: 3, name: "Thabo Khumalo", handle: "@thabocreates", avatar: "TK", color: "#00e5ff", followers: "9.8K" },
+        { id: 4, name: "Naledi Sithole", handle: "@naledi.s", avatar: "NS", color: "#ffd600", followers: "31K" },
+        { id: 5, name: "Doctor T", handle: "@doctor_t", avatar: "DT", color: "#ff6b35", followers: "1.2K" }
+    ];
+    const ME = USERS[4];
+
+    let CHATS = [
+        { id: 1, user: USERS[0], lastMsg: "Hey! How are you?", time: "10:08", unread: 0, online: true },
+        { id: 2, user: USERS[1], lastMsg: "Try my challenge!", time: "09:45", unread: 1, online: true },
+        { id: 3, user: USERS[2], lastMsg: "Great shots!", time: "Yesterday", unread: 0, online: false },
+        { id: 4, user: USERS[3], lastMsg: "Recipe ready", time: "12m ago", unread: 0, online: false }
+    ];
+
+    let MESSAGES = {
+        1: [{ from: 1, text: "Hey! How are you?", time: "10:02" }, { from: 5, text: "I'm good! 💪", time: "10:04" }],
+        2: [{ from: 2, text: "Try my challenge!", time: "09:30" }, { from: 5, text: "Haha okay 😂", time: "09:32" }],
+        3: [{ from: 3, text: "Check my latest shots!", time: "Yesterday" }],
+        4: [{ from: 4, text: "Recipe almost ready", time: "12m ago" }]
+    };
+
+    const STORIES = [
+        { user: USERS[0], seen: false },
+        { user: USERS[1], seen: false },
+        { user: USERS[2], seen: true },
+        { user: USERS[3], seen: false }
+    ];
+
+    const FEED_POSTS = [
+        { user: USERS[0], time: "2m ago", emoji: "🌆", likes: 4821, comments: 312, shares: 98, gradient: "linear-gradient(135deg,#ff2d6f,#7c3aed)" },
+        { user: USERS[3], time: "15m ago", emoji: "🍲", likes: 2109, comments: 87, shares: 44, gradient: "linear-gradient(135deg,#ffd600,#ff6b35)" },
+        { user: USERS[1], time: "1h ago", emoji: "🕺", likes: 8934, comments: 1204, shares: 567, gradient: "linear-gradient(135deg,#7c3aed,#00e5ff)" }
+    ];
+
+    let currentTab = "messages";
+    let currentChat = null;
+    let currentFilter = "all";
+    let searchQuery = "";
+
+    function render() {
+        if (currentTab === "messages" && !currentChat) renderMessages();
+        else if (currentTab === "home") renderHome();
+        else if (currentTab === "profile") renderProfile();
+        else if (currentTab === "reels") renderReels();
+        else if (currentTab === "create") renderCreate();
+    }
+
+    function renderMessages() {
+        let filtered = CHATS.filter(chat => {
+            const match = chat.user.name.toLowerCase().includes(searchQuery.toLowerCase());
+            if (currentFilter === "unread") return match && chat.unread > 0;
+            return match;
+        });
+        const container = document.getElementById("chat-list");
+        if (!container) return;
+        if (filtered.length === 0) {
+            container.innerHTML = `<div style="text-align:center;padding:40px;color:#7b7b9a;">💬 No chats</div>`;
+            return;
+        }
+        container.innerHTML = filtered.map(chat => `
+            <div class="chat-row" onclick="openChat(${chat.id})">
+                <div class="avatar" style="background:${chat.user.color};width:52px;height:52px;font-size:18px;">${chat.user.avatar}</div>
+                <div style="flex:1;">
+                    <div style="display:flex;justify-content:space-between;">
+                        <strong style="color:${chat.unread>0?'#f0f0ff':'#7b7b9a'}">${chat.user.name}</strong>
+                        <span style="font-size:11px;color:${chat.unread>0?'#ff2d6f':'#7b7b9a'}">${chat.time}</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                        <span style="color:#7b7b9a;font-size:13px;">${chat.lastMsg}</span>
+                        ${chat.unread>0?`<div class="unread-badge">${chat.unread}</div>`:''}
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    function renderHome() {
+        const storiesContainer = document.getElementById("stories-row");
+        if (storiesContainer) {
+            storiesContainer.innerHTML = `<div class="story"><div class="story-ring"><div class="story-inner">+</div></div><span style="color:#7b7b9a;font-size:11px;">Your story</span></div>` +
+                STORIES.map(s => `<div class="story"><div class="story-ring"><div class="story-inner" style="background:${s.user.color};">${s.user.avatar}</div></div><span style="color:${s.seen?'#7b7b9a':'#f0f0ff'};font-size:11px;">${s.user.name.split(" ")[0]}</span></div>`).join("");
+        }
+        const feedContainer = document.getElementById("feed-posts");
+        if (feedContainer) {
+            feedContainer.innerHTML = FEED_POSTS.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="avatar" style="background:${post.user.color};">${post.user.avatar}</div>
+                        <div><strong>${post.user.name}</strong><div style="font-size:11px;color:#7b7b9a;">${post.time}</div></div>
+                    </div>
+                    <div class="post-content" style="background:${post.gradient};">${post.emoji}</div>
+                    <div class="post-stats">
+                        <button class="stat-btn">❤️ ${formatNumber(post.likes)}</button>
+                        <button class="stat-btn">💬 ${formatNumber(post.comments)}</button>
+                        <button class="stat-btn">↗️ ${formatNumber(post.shares)}</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+    }
+
+    function renderProfile() {
+        const container = document.getElementById("profile-screen");
+        if (container) {
+            container.innerHTML = `
+                <div class="profile-card">
+                    <div class="avatar-lg" style="background:${ME.color};">${ME.avatar}</div>
+                    <div style="margin-top:14px;font-size:22px;font-weight:bold;">${ME.name}</div>
+                    <div style="color:#7b7b9a;">${ME.handle}</div>
+                    <div style="margin:12px;">Content Creator | Daveyton 🇿🇦</div>
+                    <div style="display:flex;justify-content:center;gap:28px;margin:16px 0;">
+                        <div><div style="font-weight:bold;">12</div><div style="font-size:12px;">Posts</div></div>
+                        <div><div style="font-weight:bold;">1.2K</div><div style="font-size:12px;">Followers</div></div>
+                        <div><div style="font-weight:bold;">340</div><div style="font-size:12px;">Following</div></div>
+                    </div>
+                </div>
+                <div style="padding:16px 20px;">
+                    <div style="font-weight:bold;margin-bottom:12px;">People you may know</div>
+                    ${USERS.filter(u=>u.id!==ME.id).map(user => `
+                        <div style="display:flex;align-items:center;gap:12px;background:#13131f;border-radius:16px;padding:12px;margin-bottom:10px;">
+                            <div class="avatar" style="background:${user.color};">${user.avatar}</div>
+                            <div style="flex:1;"><strong>${user.name}</strong><div style="font-size:12px;color:#7b7b9a;">${user.followers} followers</div></div>
+                            <button onclick="alert('Followed ${user.name}')" style="background:linear-gradient(135deg,#ff2d6f,#7c3aed);border:none;border-radius:10px;padding:7px 14px;color:white;cursor:pointer;">Follow</button>
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+        }
+    }
+
+    function renderReels() {
+        const container = document.getElementById("reels-screen");
+        if (container) {
+            container.innerHTML = `
+                <div style="height:100%;background:linear-gradient(160deg,#ff2d6f,#7c3aed,#0a0a0f);display:flex;flex-direction:column;justify-content:flex-end;padding:100px 16px 120px;">
+                    <div style="position:absolute;bottom:100px;left:16px;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div class="avatar" style="background:#ff2d6f;">ZM</div>
+                            <div><strong>Zara Mokoena</strong><div style="font-size:12px;">@zaravibes</div></div>
+                        </div>
+                        <div style="margin-top:10px;">Day in my life 🎬 Joburg never sleeps!</div>
+                    </div>
+                    <div style="position:absolute;right:12px;bottom:120px;text-align:center;">
+                        <div><div style="font-size:32px;">❤️</div><div>124K</div></div>
+                        <div style="margin-top:16px;"><div style="font-size:32px;">💬</div><div>4.2K</div></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function renderCreate() {
+        const container = document.getElementById("create-screen");
+        if (container) {
+            container.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:24px;">
+                    <div class="logo" style="font-size:34px;">CREATE</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;width:90%;">
+                        <div style="background:#13131f;border-radius:20px;padding:22px;text-align:center;"><div style="font-size:52px;">🎬</div><div>Record</div></div>
+                        <div style="background:#13131f;border-radius:20px;padding:22px;text-align:center;"><div style="font-size:52px;">📤</div><div>Upload</div></div>
+                        <div style="background:#13131f;border-radius:20px;padding:22px;text-align:center;"><div style="font-size:52px;">✨</div><div>Effects</div></div>
+                        <div style="background:#13131f;border-radius:20px;padding:22px;text-align:center;"><div style="font-size:52px;">🎵</div><div>Sound</div></div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function openChat(chatId) {
+        currentChat = CHATS.find(c => c.id === chatId);
+        if (!currentChat) return;
+        currentChat.unread = 0;
+        document.querySelectorAll(".screen").forEach(s => s.classList.add("hide"));
+        document.getElementById("chat-detail").classList.remove("hide");
+        document.getElementById("chat-name").innerText = currentChat.user.name;
+        document.getElementById("chat-avatar").innerHTML = currentChat.user.avatar;
+        document.getElementById("chat-avatar").style.background = currentChat.user.color;
+        document.getElementById("chat-status").innerHTML = currentChat.online ? "Online" : "Offline";
+        renderChatMessages();
+        renderMessages();
+    }
+
+    function renderChatMessages() {
+        const container = document.getElementById("chat-messages");
+        if (!container || !currentChat) return;
+        const msgs = MESSAGES[currentChat.id] || [];
+        container.innerHTML = msgs.map(msg => `
+            <div class="message ${msg.from === 5 ? 'message-out' : 'message-in'}">
+                ${msg.text}
+                <div style="font-size:10px;color:rgba(255,255,255,0.45);text-align:right;margin-top:4px;">${msg.time}</div>
+            </div>
+        `).join("");
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("message-input");
+        const text = input.value.trim();
+        if (!text || !currentChat) return;
+        const newMsg = { id: Date.now(), from: 5, text: text, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
+        if (!MESSAGES[currentChat.id]) MESSAGES[currentChat.id] = [];
+        MESSAGES[currentChat.id].push(newMsg);
+        currentChat.lastMsg = text;
+        currentChat.time = newMsg.time;
+        input.value = "";
+        renderChatMessages();
+        renderMessages();
+    }
+
+    function closeChat() {
+        currentChat = null;
+        document.getElementById("chat-detail").classList.add("hide");
+        showScreen(currentTab);
+        render();
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        currentChat = null;
+        showScreen(tab);
+        render();
+    }
+
+    function showScreen(tab) {
+        document.getElementById("messages-screen").classList.add("hide");
+        document.getElementById("home-screen").classList.add("hide");
+        document.getElementById("reels-screen").classList.add("hide");
+        document.getElementById("profile-screen").classList.add("hide");
+        document.getElementById("create-screen").classList.add("hide");
+        document.getElementById("chat-detail").classList.add("hide");
+        if (tab === "messages") document.getElementById("messages-screen").classList.remove("hide");
+        else if (tab === "home") document.getElementById("home-screen").classList.remove("hide");
+        else if (tab === "reels") document.getElementById("reels-screen").classList.remove("hide");
+        else if (tab === "profile") document.getElementById("profile-screen").classList.remove("hide");
+        else if (tab === "create") document.getElementById("create-screen").classList.remove("hide");
+    }
+
+    function formatNumber(n) {
+        if (n >= 1000) return (n/1000).toFixed(1) + "K";
+        return n.toString();
+    }
+
+    document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => switchTab(btn.getAttribute("data-tab")));
+    });
+
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            currentFilter = btn.getAttribute("data-filter");
+            document.querySelectorAll(".filter-btn").forEach(b => {
+                if (b.getAttribute("data-filter") === currentFilter) {
+                    b.classList.add("filter-active");
+                } else {
+                    b.classList.remove("filter-active");
+                }
+            });
+            renderMessages();
+        });
+    });
+
+    document.getElementById("search-input")?.addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        renderMessages();
+    });
+
+    document.getElementById("add-friend-btn")?.addEventListener("click", () => {
+        alert("Add friend feature - Enter phone number: +27 82 111 2233");
+    });
+
+    render();
+    renderMessages();
+</script>
+</body>
+</html>
